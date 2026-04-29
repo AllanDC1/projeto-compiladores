@@ -1,0 +1,54 @@
+S → programa
+programa → lista_comandos
+lista_comandos → comando lista_comandos | ε
+
+comando → declaracao | atribuicao | condicional | laco | entrada | saida
+
+declaracao → tipo : id ;
+tipo → inteiro | palavra | decimal | logico
+
+atribuicao → id << expressao ;
+
+expressao → termo expressao'
+
+expressao' → + termo expressao'
+            | - termo expressao'
+            | ε
+
+termo → fator termo'
+
+termo' → * fator termo'
+        | / fator termo'
+        | ε
+
+fator → id
+        | num
+        | texto
+        | verdadeiro
+        | falso
+        | ( expressao )
+
+
+condicional → se ( expressao ) { lista_comandos } senao_opcional
+senao_opcional → senão { lista_comandos } | ε
+
+laco → enquanto ( expressao ) { lista_comandos }
+       | durante ( atribuicao ; expressao ; atribuicao ) { lista_comandos }
+
+entrada → entrada ( id ) ;
+
+saida → saida ( expressao ) ;
+
+id → letra [letra | digito]*
+num → inteiro | decimal
+
+inteiro → digito+
+decimal → digito+ . digito+
+
+texto → " (digito | letra | \s )+ "
+
+verdadeiro → true
+falso → false
+
+letra → [a-zA-Z]
+digito → [0-9]
