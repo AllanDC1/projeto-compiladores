@@ -119,7 +119,7 @@ FECHA_CHAVE     → }
 ASPAS           → "
 
 
-// ==================== TOKENS LÉXICOS (para o Lexer) ====================
+// ==================== TOKENS LÉXICOS (para o src.Lexer) ====================
 
 ID              → [a-zA-Z][a-zA-Z0-9]*               (Identificador)
 NUMERO_INT      → [0-9]+                             (Número inteiro)
