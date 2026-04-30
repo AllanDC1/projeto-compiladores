@@ -1,54 +1,127 @@
+// ==================== PROGRAMA ====================
+
 S → programa
+
 programa → lista_comandos
-lista_comandos → comando lista_comandos | ε
 
-comando → declaracao | atribuicao | condicional | laco | entrada | saida
+lista_comandos → comando
+               | comando lista_comandos
 
-declaracao → tipo : id ;
-tipo → inteiro | palavra | decimal | logico
 
-atribuicao → id << expressao ;
+// ==================== COMANDOS ====================
 
-expressao → termo expressao'
+comando → declaracao
+         | atribuicao
+         | condicional
+         | laco
+         | entrada
+         | saida
 
-expressao' → + termo expressao'
-            | - termo expressao'
+
+// ==================== DECLARAÇÕES ====================
+
+declaracao → tipo OP_DECLARACAO id PONTO_VIRGULA
+
+tipo → INTEIRO
+      | PALAVRA
+      | DECIMAL
+      | LOGICO
+
+
+// ==================== ATRIBUIÇÃO ====================
+
+atribuicao → ID OP_ATRIBUICAO expressao PONTO_VIRGULA
+
+
+// ==================== EXPRESSÕES (SEM RECURSÃO) ====================
+
+expressao → termo
+          | expressao op_aditivo termo
+
+termo → fator
+      | termo op_multiplicativo fator
+
+fator → ID
+      | numero
+      | TEXTO
+      | booleano
+      | ABRE_PARENTESE expressao FECHA_PARENTESE
+
+numero → NUMERO_INT
+       | NUMERO_DECIMAL
+
+booleano → VERDADEIRO
+         | FALSO
+
+op_aditivo → MAIS | MENOS
+
+op_multiplicativo → VEZES | DIVISAO
+
+
+// ==================== CONDICIONAL ====================
+
+condicional → SE ABRE_PARENTESE expressao FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE bloco_senao
+
+bloco_senao → SENAO ABRE_CHAVE lista_comandos FECHA_CHAVE
             | ε
 
-termo → fator termo'
 
-termo' → * fator termo'
-        | / fator termo'
-        | ε
+// ==================== LAÇOS ====================
 
-fator → id
-        | num
-        | texto
-        | verdadeiro
-        | falso
-        | ( expressao )
+laco → enquanto
+     | durante
+
+enquanto → ENQUANTO ABRE_PARENTESE expressao FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE
+
+durante → DURANTE ABRE_PARENTESE atribuicao PONTO_VIRGULA expressao PONTO_VIRGULA atribuicao FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE
 
 
-condicional → se ( expressao ) { lista_comandos } senao_opcional
-senao_opcional → senão { lista_comandos } | ε
+// ==================== ENTRADA/SAÍDA ====================
 
-laco → enquanto ( expressao ) { lista_comandos }
-       | durante ( atribuicao ; expressao ; atribuicao ) { lista_comandos }
+entrada → ENTRADA ABRE_PARENTESE ID FECHA_PARENTESE PONTO_VIRGULA
 
-entrada → entrada ( id ) ;
+saida → SAIDA ABRE_PARENTESE expressao FECHA_PARENTESE PONTO_VIRGULA
 
-saida → saida ( expressao ) ;
+// ==================== PALAVRAS-CHAVE ====================
 
-id → letra [letra | digito]*
-num → inteiro | decimal
+INTEIRO     → inteiro
+PALAVRA     → palavra
+DECIMAL     → decimal
+LOGICO      → logico
+SE          → se
+SENAO       → senão
+ENQUANTO    → enquanto
+DURANTE     → durante
+ENTRADA     → entrada
+SAIDA       → saida
+VERDADEIRO  → true
+FALSO       → false
 
-inteiro → digito+
-decimal → digito+ . digito+
 
-texto → " (digito | letra | \s )+ "
+// ==================== OPERADORES ====================
 
-verdadeiro → true
-falso → false
+MAIS        → +
+MENOS       → -
+VEZES       → *
+DIVISAO     → /
+OP_ATRIBUICAO → <<
+OP_DECLARACAO → :
 
-letra → [a-zA-Z]
-digito → [0-9]
+
+// ==================== DELIMITADORES ====================
+
+PONTO_VIRGULA → ;
+PONTO       → .
+ABRE_PARENTESE  → (
+FECHA_PARENTESE → )
+ABRE_CHAVE      → {
+FECHA_CHAVE     → }
+ASPAS           → "
+
+
+// ==================== TOKENS LÉXICOS (para o Lexer) ====================
+
+ID              → [a-zA-Z][a-zA-Z0-9]*               (Identificador)
+NUMERO_INT      → [0-9]+                             (Número inteiro)
+NUMERO_DECIMAL  → [0-9]+\.[0-9]+                     (Número decimal)
+TEXTO           → "[a-zA-Z0-9 ]*"                    (String com aspas)
