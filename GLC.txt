@@ -14,13 +14,12 @@ comando → declaracao
          | atribuicao
          | condicional
          | laco
-         | entrada
          | saida
 
 
 // ==================== DECLARAÇÕES ====================
 
-declaracao → tipo OP_DECLARACAO id PONTO_VIRGULA
+declaracao → tipo OP_DECLARACAO ID PONTO_VIRGULA
 
 tipo → INTEIRO
       | PALAVRA
@@ -32,11 +31,33 @@ tipo → INTEIRO
 
 atribuicao → ID OP_ATRIBUICAO expressao PONTO_VIRGULA
 
+atribuicao_loop → ID OP_ATRIBUICAO expressao
+
 
 // ==================== EXPRESSÕES (SEM RECURSÃO) ====================
 
 expressao → termo
           | expressao op_aditivo termo
+
+expressao_relacional → expressao
+                    | expressao op_comparacao expressao
+
+condicao → termo_logico
+      | condicao op_ou termo_logico
+
+termo_logico → fator_logico
+          | termo_logico op_e fator_logico
+
+fator_logico → op_nao fator_logico
+          | ABRE_PARENTESE condicao FECHA_PARENTESE
+          | expressao_relacional
+          | booleano
+
+op_e → E | E_LOGICO
+
+op_ou → OU | OU_LOGICO
+
+op_nao → NAO | NAO_LOGICO
 
 termo → fator
       | termo op_multiplicativo fator
@@ -45,6 +66,8 @@ fator → ID
       | numero
       | TEXTO
       | booleano
+      | entrada
+      | MENOS fator
       | ABRE_PARENTESE expressao FECHA_PARENTESE
 
 numero → NUMERO_INT
@@ -57,10 +80,17 @@ op_aditivo → MAIS | MENOS
 
 op_multiplicativo → VEZES | DIVISAO
 
+op_comparacao → IGUAL
+              | DIFERENTE
+              | MAIOR
+              | MENOR
+              | MAIOR_IGUAL
+              | MENOR_IGUAL
+
 
 // ==================== CONDICIONAL ====================
 
-condicional → SE ABRE_PARENTESE expressao FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE bloco_senao
+condicional → SE ABRE_PARENTESE condicao FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE bloco_senao
 
 bloco_senao → SENAO ABRE_CHAVE lista_comandos FECHA_CHAVE
             | ε
@@ -71,14 +101,15 @@ bloco_senao → SENAO ABRE_CHAVE lista_comandos FECHA_CHAVE
 laco → enquanto
      | durante
 
-enquanto → ENQUANTO ABRE_PARENTESE expressao FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE
+enquanto → ENQUANTO ABRE_PARENTESE condicao FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE
 
-durante → DURANTE ABRE_PARENTESE atribuicao PONTO_VIRGULA expressao PONTO_VIRGULA atribuicao FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE
+durante → DURANTE ABRE_PARENTESE atribuicao_loop PONTO_VIRGULA condicao PONTO_VIRGULA atribuicao_loop FECHA_PARENTESE ABRE_CHAVE lista_comandos FECHA_CHAVE
 
 
 // ==================== ENTRADA/SAÍDA ====================
 
-entrada → ENTRADA ABRE_PARENTESE ID FECHA_PARENTESE PONTO_VIRGULA
+entrada → ENTRADA ABRE_PARENTESE FECHA_PARENTESE
+      | ENTRADA ABRE_PARENTESE TEXTO FECHA_PARENTESE
 
 saida → SAIDA ABRE_PARENTESE expressao FECHA_PARENTESE PONTO_VIRGULA
 
@@ -96,6 +127,9 @@ ENTRADA     → entrada
 SAIDA       → saida
 VERDADEIRO  → true
 FALSO       → false
+E           → e
+OU          → ou
+NAO         → nao
 
 
 // ==================== OPERADORES ====================
@@ -106,6 +140,15 @@ VEZES       → *
 DIVISAO     → /
 OP_ATRIBUICAO → <<
 OP_DECLARACAO → :
+IGUAL       → ==
+DIFERENTE   → !=
+MAIOR       → >
+MENOR       → <
+MAIOR_IGUAL → >=
+MENOR_IGUAL → <=
+E_LOGICO    → &&
+OU_LOGICO   → ||
+NAO_LOGICO  → !
 
 
 // ==================== DELIMITADORES ====================
@@ -125,3 +168,14 @@ ID              → [a-zA-Z][a-zA-Z0-9]*               (Identificador)
 NUMERO_INT      → [0-9]+                             (Número inteiro)
 NUMERO_DECIMAL  → [0-9]+\.[0-9]+                     (Número decimal)
 TEXTO           → "[a-zA-Z0-9 ]*"                    (String com aspas)
+IGUAL           → ==                                  (Comparação de igualdade)
+DIFERENTE       → !=                                  (Comparação de diferença)
+MAIOR           → >                                   (Maior que)
+MENOR           → <                                   (Menor que)
+MAIOR_IGUAL     → >=                                  (Maior ou igual)
+MENOR_IGUAL     → <=                                  (Menor ou igual)
+E_LOGICO        → &&                                  (Conjunção lógica)
+OU_LOGICO       → ||                                  (Disjunção lógica)
+NAO_LOGICO      → !                                   (Negação lógica)
+COMENTARIO_LINHA → //.*                               (Comentário de linha)
+COMENTARIO_BLOCO → /\*([^*]|\*+[^*/])*\*+/          (Comentário de bloco)
