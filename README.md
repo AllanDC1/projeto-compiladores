@@ -1,6 +1,6 @@
 # Projeto compiladores - Portugol Diferenciado
 
-Linguagem de programação própria, inspirada no Portugol, porém, com algumas diferenças implementadas.
+Linguagem de programação própria, inspirada no Portugol, porém, com algumas diferenças implementadas. <br>
 Compila/Traduz a linguagem para Kotlin ou Java
 
 ## Integrantes
@@ -170,7 +170,12 @@ Rode o comando:
 java src/Main.java <caminho_do_arquivo_de_entrada> [--lang=kotlin|java] [--ast=tree|preorder|code] [--tokens]
 ```
 
-Depois disso, no mesmo lugar onde está o arquivo de entrada, será gerado um arquivo com a extensão .kt ou .java, dependendo da linguagem escolhida.
+**Flags:**
+- `--lang`: Especifica a linguagem de saída, podendo ser Kotlin (padrão) ou Java.
+- `--ast`: Especifica o tipo de representação da árvore sintática a ser exibida. As opções são `tree` (padrão), `preorder` e `code`.
+- `--tokens`: Exibe a lista de tokens gerados durante a análise léxica.
+
+Depois disso, no mesmo lugar onde está o arquivo de entrada, será gerado um arquivo com a extensão `.kt` ou `.java`, dependendo da linguagem escolhida.
 
 Então, basta compilar e rodar o arquivo gerado para ver o resultado.
 
