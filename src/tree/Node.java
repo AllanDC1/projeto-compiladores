@@ -18,6 +18,14 @@ public class Node {
     this.exit = "";
   }
 
+  public String getNome() {
+    return nome;
+  }
+
+  public List<Node> getNodes() {
+    return nodes;
+  }
+
   public void addNode(Node newNode) {
     nodes.add(newNode);
   }
@@ -44,7 +52,7 @@ public class Node {
   // adaptado de
   // https://stackoverflow.com/questions/4965335/how-to-print-binary-tree-diagram-in-java
   public String getTree() {
-    System.out.println("AST");
+    System.out.println("=== AST ===");
     StringBuilder buffer = new StringBuilder(50);
     print(buffer, "", "");
     return buffer.toString();

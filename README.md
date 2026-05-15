@@ -199,6 +199,35 @@ enquanto (i < 5) {
 
 ## Traduções equivalentes
 
+### KOTLIN
+
+- Declaração de variável
+
+var contador: Int = 0
+var isTrue: Boolean = false
+var nome: String = "jose"
+
+- Condicional (if else)
+
+var idade: Int = 0
+idade = run {
+    print("Digite sua idade");
+    readln()
+}.toInt()
+if (idade >= 18) {
+    println("Maior de idade")
+} else {
+    println("Menor de idade")
+}
+
+- Laço de repetição
+
+var i: Int = 0
+while (i < 5) {
+    println(i)
+    i = i + 1
+}
+
 ### PYTHON
 
 - Declaração de variável

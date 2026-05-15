@@ -1,6 +1,7 @@
 package src.parser;
 
 import src.lexer.Token;
+import src.tree.Tree;
 
 import java.util.List;
 
@@ -13,22 +14,21 @@ public class Parser {
         this.token = getNextToken();
     }
 
-    public void runParser() {
+    public Tree runParser() {
         Grammar grammar = new Grammar(this);
 
         if (grammar.programa()) {
             if (matchTipo("EOF")) {
-                System.out.println("SUCESSO!!!");
-                grammar.getTree().printTree();
-                return;
+                return grammar.getTree();
             }
         }
         erro();
+        return null;
     }
 
     public Token getNextToken() {
-        if (tokens.size() > 0) {
-            return tokens.remove(0);
+        if (!tokens.isEmpty()) {
+            return tokens.removeFirst();
         }
         return null;
     }

@@ -11,18 +11,22 @@ public class Tree {
     this.root = root;
   }
 
+  public Node getRoot() {
+    return root;
+  }
+
   public void setRoot(Node node) {
     root = node;
   }
 
   public void preOrder() {
     preOrder(root);
-    System.out.println("");
+    System.out.println();
   }
 
   public void printCode() {
     printCode(root);
-    System.out.println("");
+    System.out.println();
   }
 
   public void preOrder(Node node) {
