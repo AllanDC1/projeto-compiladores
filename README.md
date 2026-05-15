@@ -167,13 +167,14 @@ saida → SAIDA ABRE_PARENTESE expressao FECHA_PARENTESE PONTO_VIRGULA
 Rode o comando:
 
 ``` bash
-java src/Main.java <caminho_do_arquivo_de_entrada> [--lang=kotlin|java] [--ast=tree|preorder|code] [--tokens]
+java src/Main.java <caminho_do_arquivo_de_entrada> [--lang=kotlin|java] [--ast=tree|preorder|code] [--tokens] [--run]
 ```
 
 **Flags:**
 - `--lang`: Especifica a linguagem de saída, podendo ser Kotlin (padrão) ou Java.
 - `--ast`: Especifica o tipo de representação da árvore sintática a ser exibida. As opções são `tree` (padrão), `preorder` e `code`.
 - `--tokens`: Exibe a lista de tokens gerados durante a análise léxica.
+- `--run`: Compila e executa automaticamente o código gerado.
 
 Depois disso, no mesmo lugar onde está o arquivo de entrada, será gerado um arquivo com a extensão `.kt` ou `.java`, dependendo da linguagem escolhida.
 
