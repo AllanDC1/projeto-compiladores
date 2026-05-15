@@ -1,4 +1,4 @@
-package src;
+package src.tree;
 
 import java.util.ArrayList;
 import java.util.Iterator;

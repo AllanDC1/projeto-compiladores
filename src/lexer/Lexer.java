@@ -1,4 +1,6 @@
-package src;
+package src.lexer;
+
+import src.afd.*;
 
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
@@ -6,26 +8,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
-    private List<Token> tokens;
-    private List<AFD> afds;
-    private CharacterIterator code;
+    private final List<Token> tokens;
+    private final List<AFD> afds;
+    private final CharacterIterator code;
 
     public Lexer(String code) {
         tokens = new ArrayList<>();
         this.code = new StringCharacterIterator(code);
         afds = new ArrayList<>();
-        afds.add(new MathOperator());
-        afds.add(new Number());
+        afds.add(new CommentAFD());
+        afds.add(new StringAFD());
+        afds.add(new WordAFD());
+        afds.add(new NumberAFD());
+        afds.add(new SymbolAFD());
+        afds.add(new MathOperatorAFD());
     }
 
     public void skipWhiteSpace() {
-        while (code.current() == ' ' || code.current() == '\n') {
+        while (code.current() == ' ' || code.current() == '\n' || code.current() == '\r' || code.current() == '\t') {
             code.next();
         }
     }
 
     private void error() {
-        throw new RuntimeException("Error: token not recognized: " + code.current());
+        throw new RuntimeException("Erro - token nâo reconhecido: " + code.current());
     }
 
     private Token searchNextToken() {
@@ -40,11 +46,13 @@ public class Lexer {
 
     public List<Token> getTokens() {
         Token t;
-        do { 
+        do {
             skipWhiteSpace();
             t = searchNextToken();
             if (t == null) error();
-            tokens.add(t);
+            if (!t.tipo.equals("comentario")) {
+                tokens.add(t);
+            }
         } while (!t.tipo.equals("EOF"));
         return tokens;
     }

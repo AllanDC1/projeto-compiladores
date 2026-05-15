@@ -1,8 +1,10 @@
-package src;
+package src.afd;
+
+import src.lexer.Token;
 
 import java.text.CharacterIterator;
 
-public class Number extends AFD {
+public class NumberAFD extends AFD {
     
     @Override
     public Token evaluate(CharacterIterator code) {
@@ -13,21 +15,23 @@ public class Number extends AFD {
                 number += '.';
                 code.next();
                 number += readNumber(code);
-            }
-            if (isTokenSeparator(code)) {
-                return new Token("NUM", number);
+                if (isTokenSeparator(code)) {
+                    return new Token("num_decimal", number);
+                }
+            } else if (isTokenSeparator(code)) {
+                return new Token("num_int", number);
             }
         }
         return null;
     }
 
     private String readNumber(CharacterIterator code) {
-        String number = "";
+        StringBuilder number = new StringBuilder();
         while (Character.isDigit(code.current())) {
-            number += code.current();
+            number.append(code.current());
             code.next();
         }
-        return number;
+        return number.toString();
     }
 
 }

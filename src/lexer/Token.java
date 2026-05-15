@@ -1,4 +1,4 @@
-package src;
+package src.lexer;
 
 public class Token {
     public String tipo;
@@ -11,6 +11,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return "<" + tipo + ", " + lexema + ">";
+        return "< " + tipo + ", " + lexema + " >";
     }
 }
