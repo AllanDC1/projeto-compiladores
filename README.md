@@ -163,6 +163,7 @@ saida → SAIDA ABRE_PARENTESE expressao FECHA_PARENTESE PONTO_VIRGULA
 
 - Requisitos:
   - JDK instalado
+  - Kotlinc **(opcional, apenas se quiser rodar o código Kotlin)**
 
 Rode o comando:
 
