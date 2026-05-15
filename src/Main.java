@@ -1,5 +1,7 @@
 package src;
 
+import src.generator.CodeGenerator;
+import src.generator.JavaGenerator;
 import src.generator.KotlinGenerator;
 import src.lexer.Lexer;
 import src.lexer.Token;
@@ -15,7 +17,7 @@ public class Main {
 
     static void main(String[] args) throws IOException {
         if (args.length < 1) {
-            System.out.println("Comando para rodar: java src.Main <arquivo> [--tokens] [--ast]");
+            System.out.println("Uso: java src.Main <arquivo> [--lang=kotlin|java] [--tokens] [--ast|--ast=tree|--ast=preorder|--ast=code]");
             return;
         }
 
@@ -23,12 +25,15 @@ public class Main {
 
         boolean printTokens = false;
         String astMode = null;
+        String lang = "kotlin";
         for (int i = 1; i < args.length; i++) {
             switch (args[i]) {
                 case "--ast", "--ast=tree" -> astMode = "tree";
                 case "--ast=preorder" -> astMode = "preorder";
                 case "--ast=code" -> astMode = "code";
                 case "--tokens" -> printTokens = true;
+                case "--lang=kotlin" -> lang = "kotlin";
+                case "--lang=java" -> lang = "java";
             }
         }
 
@@ -55,8 +60,12 @@ public class Main {
                 }
             }
 
-            String outputFile = args[0].replaceAll("\\.[^.]+$", "") + ".kt";
-            KotlinGenerator generator = new KotlinGenerator(tree);
+            CodeGenerator generator = switch (lang) {
+                case "java" -> new JavaGenerator(tree);
+                default -> new KotlinGenerator(tree);
+            };
+
+            String outputFile = args[0].replaceAll("\\.[^.]+$", "") + generator.getFileExtension();
             generator.generate(outputFile);
         }
     }

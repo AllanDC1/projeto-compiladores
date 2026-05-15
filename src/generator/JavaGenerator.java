@@ -3,29 +3,36 @@ package src.generator;
 import src.tree.Node;
 import src.tree.Tree;
 
-public class KotlinGenerator extends CodeGenerator {
+public class JavaGenerator extends CodeGenerator {
 
-    public KotlinGenerator(Tree tree) {
+    public JavaGenerator(Tree tree) {
         super(tree);
     }
 
     @Override
     public String getFileExtension() {
-        return ".kt";
+        return ".java";
     }
 
     @Override
     public String getLanguageName() {
-        return "Kotlin";
+        return "Java";
     }
 
     @Override
     protected void generatePrograma(Node node) {
-        appendLine("fun main() {");
+        appendLine("import java.util.Scanner;");
+        appendLine("");
+        appendLine("public class Main {");
         indentLevel++;
+        appendLine("public static void main(String[] args) {");
+        indentLevel++;
+        appendLine("Scanner scanner = new Scanner(System.in);");
         for (Node child : node.getNodes()) {
             generateNode(child);
         }
+        indentLevel--;
+        appendLine("}");
         indentLevel--;
         appendLine("}");
     }
@@ -35,7 +42,7 @@ public class KotlinGenerator extends CodeGenerator {
         String tipo = node.getNodes().get(0).getNome();
         String id = node.getNodes().get(1).getNome();
         symbolTable.put(id, tipo);
-        appendLine("var " + id + ": " + translateType(tipo) + " = " + getDefaultValue(tipo));
+        appendLine(translateType(tipo) + " " + id + " = " + getDefaultValue(tipo) + ";");
     }
 
     @Override
@@ -46,7 +53,7 @@ public class KotlinGenerator extends CodeGenerator {
         currentTargetType = tipo;
         String expr = generateExpressao(node.getNodes().get(2));
         currentTargetType = null;
-        appendLine("var " + id + ": " + translateType(tipo) + " = " + expr);
+        appendLine(translateType(tipo) + " " + id + " = " + expr + ";");
     }
 
     @Override
@@ -55,7 +62,7 @@ public class KotlinGenerator extends CodeGenerator {
         currentTargetType = symbolTable.get(id);
         String expr = generateExpressao(node.getNodes().get(1));
         currentTargetType = null;
-        appendLine(id + " = " + expr);
+        appendLine(id + " = " + expr + ";");
     }
 
     @Override
@@ -104,21 +111,21 @@ public class KotlinGenerator extends CodeGenerator {
         Node condicaoNode = node.getNodes().get(1);
         Node stepNode = node.getNodes().get(2);
 
-        appendLine(initNode.getNodes().get(0).getNome() + " = " + generateExpressao(initNode.getNodes().get(1)));
+        appendLine(initNode.getNodes().get(0).getNome() + " = " + generateExpressao(initNode.getNodes().get(1)) + ";");
 
         appendLine("while (" + generateCondicao(condicaoNode) + ") {");
         indentLevel++;
         for (int i = 3; i < node.getNodes().size(); i++) {
             generateNode(node.getNodes().get(i));
         }
-        appendLine(stepNode.getNodes().get(0).getNome() + " = " + generateExpressao(stepNode.getNodes().get(1)));
+        appendLine(stepNode.getNodes().get(0).getNome() + " = " + generateExpressao(stepNode.getNodes().get(1)) + ";");
         indentLevel--;
         appendLine("}");
     }
 
     @Override
     protected void generateSaida(Node node) {
-        appendLine("println(" + generateExpressao(node.getNodes().getFirst()) + ")");
+        appendLine("System.out.println(" + generateExpressao(node.getNodes().getFirst()) + ");");
     }
 
     @Override
@@ -156,20 +163,19 @@ public class KotlinGenerator extends CodeGenerator {
 
     @Override
     protected String generateEntrada(Node node) {
-        String readExpr;
         if (!node.getNodes().isEmpty()) {
-            readExpr = "run { print(" + node.getNodes().getFirst().getNome() + "); readln() }";
-        } else {
-            readExpr = "readln()";
+            String prompt = node.getNodes().getFirst().getNome();
+            appendLine("System.out.print(" + prompt + ");");
         }
         if (currentTargetType != null) {
-            switch (currentTargetType) {
-                case "inteiro" -> readExpr += ".toInt()";
-                case "decimal" -> readExpr += ".toDouble()";
-                case "logico" -> readExpr += ".toBoolean()";
-            }
+            return switch (currentTargetType) {
+                case "inteiro" -> "scanner.nextInt()";
+                case "decimal" -> "scanner.nextDouble()";
+                case "logico" -> "scanner.nextBoolean()";
+                default -> "scanner.nextLine()";
+            };
         }
-        return readExpr;
+        return "scanner.nextLine()";
     }
 
     private String generateValue(Node node) {
@@ -235,10 +241,10 @@ public class KotlinGenerator extends CodeGenerator {
     @Override
     protected String translateType(String tipo) {
         return switch (tipo) {
-            case "inteiro" -> "Int";
-            case "decimal" -> "Double";
+            case "inteiro" -> "int";
+            case "decimal" -> "double";
             case "texto" -> "String";
-            case "logico" -> "Boolean";
+            case "logico" -> "boolean";
             default -> tipo;
         };
     }
@@ -254,3 +260,4 @@ public class KotlinGenerator extends CodeGenerator {
         };
     }
 }
+
