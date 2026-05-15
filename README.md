@@ -179,7 +179,7 @@ java src/Main.java <caminho_do_arquivo_de_entrada> [--lang=kotlin|java] [--ast=t
 
 Depois disso, no mesmo lugar onde está o arquivo de entrada, será gerado um arquivo com a extensão `.kt` ou `.java`, dependendo da linguagem escolhida.
 
-Então, basta compilar e rodar o arquivo gerado para ver o resultado.
+Caso não tenha utilizado a flag `--run`, basta manualmente compilar e rodar o arquivo gerado para ver o resultado.
 
 ## Exemplos de códigos
 
