@@ -3,14 +3,23 @@ package src.parser;
 import src.lexer.Token;
 import src.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Parser {
     List<Token> tokens;
     Token token;
+    private final List<String> erros;
+
+    private static final Set<String> SYNC_LEXEMAS = Set.of(
+        ";", "}", "<-fim", "se", "enquanto", "durante", "saida",
+        "inteiro", "texto", "decimal", "logico"
+    );
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
+        this.erros = new ArrayList<>();
         this.token = getNextToken();
     }
 
@@ -19,10 +28,18 @@ public class Parser {
 
         if (grammar.programa()) {
             if (matchTipo("EOF")) {
+                if (temErros()) {
+                    printErros();
+                    return null;
+                }
                 return grammar.getTree();
             }
         }
-        erro();
+
+        if (erros.isEmpty()) {
+            registrarErro();
+        }
+        printErros();
         return null;
     }
 
@@ -33,13 +50,34 @@ public class Parser {
         return null;
     }
 
-    public void erro() {
-        if (token != null) {
-            System.out.println("Token inválido: " + token.lexema);
-        } else {
-            System.out.println("ERRO: Fim inesperado do arquivo");
+    public void registrarErro() {
+        String tokenInfo = (token != null) ? "Token inválido: '" + token.lexema + "'" : "Fim inesperado do arquivo";
+        String linhaInfo = (token != null && token.linha > 0) ? "Linha " + token.linha + ": " : "";
+        erros.add(linhaInfo + tokenInfo);
+    }
+
+    public boolean temErros() {
+        return !erros.isEmpty();
+    }
+
+    public void printErros() {
+        System.out.println("========== ERROS SINTÁTICOS ==========");
+        for (int i = 0; i < erros.size(); i++) {
+            System.out.println("  [" + (i + 1) + "] " + erros.get(i));
         }
-        System.out.println("-----------------------------");
+        System.out.println("Total: " + erros.size() + " erro(s) encontrado(s)");
+    }
+
+    public void sincronizar() {
+        while (token != null && !token.tipo.equals("EOF")) {
+            if (SYNC_LEXEMAS.contains(token.lexema)) {
+                if (token.lexema.equals(";")) {
+                    token = getNextToken();
+                }
+                return;
+            }
+            token = getNextToken();
+        }
     }
 
     public boolean matchLexema(String palavra) {

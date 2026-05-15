@@ -15,22 +15,26 @@ public class Grammar {
 
     public boolean programa() {
         Node root = new Node("programa");
-        if (parser.matchLexema("inicio->") && listaComandos(root) && parser.matchLexema("<-fim")) {
-            tree.setRoot(root);
-            return true;
+        if (!parser.matchLexema("inicio->")) {
+            parser.registrarErro();
+            parser.sincronizar();
         }
-        return false;
+        listaComandos(root);
+        if (!parser.matchLexema("<-fim")) {
+            parser.registrarErro();
+        }
+        tree.setRoot(root);
+        return true;
     }
 
     public boolean listaComandos(Node pai) {
-        if (!comando(pai)) {
-            return false;
-        }
         while (parser.currentToken() != null &&
                !parser.currentToken().lexema.equals("}") &&
-               !parser.currentToken().lexema.equals("<-fim")) {
+               !parser.currentToken().lexema.equals("<-fim") &&
+               !parser.currentToken().tipo.equals("EOF")) {
             if (!comando(pai)) {
-                break;
+                parser.registrarErro();
+                parser.sincronizar();
             }
         }
         return true;
@@ -64,22 +68,41 @@ public class Grammar {
         Node tipoNode = new Node(parser.currentToken().lexema);
         if (!tipo()) return false;
 
-        if (!parser.matchLexema(":")) return false;
+        if (!parser.matchLexema(":")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
 
         String nomeId = parser.currentToken().lexema;
-        if (!parser.matchTipo("id")) return false;
+        if (!parser.matchTipo("id")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+
 
         if (parser.matchLexema("<<")) {
             Node node = pai.addNode("declaracao_atribuicao");
             node.addNode(tipoNode);
             node.addNode(new Node(nomeId));
-            if (!expressao(node)) return false;
-            return parser.matchLexema(";");
+            if (!expressao(node)) {
+                parser.registrarErro();
+                parser.sincronizar();
+                return true;
+            }
+            if (!parser.matchLexema(";")) {
+                parser.registrarErro();
+            }
+            return true;
         } else {
             Node node = pai.addNode("declaracao");
             node.addNode(tipoNode);
             node.addNode(new Node(nomeId));
-            return parser.matchLexema(";");
+            if (!parser.matchLexema(";")) {
+                parser.registrarErro();
+            }
+            return true;
         }
     }
 
@@ -92,17 +115,36 @@ public class Grammar {
         Node node = pai.addNode("atribuicao");
         node.addNode(new Node(parser.currentToken().lexema));
         if (!parser.matchTipo("id")) return false;
-        if (!parser.matchLexema("<<")) return false;
-        if (!expressao(node)) return false;
-        return parser.matchLexema(";");
+
+        if (!parser.matchLexema("<<")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!expressao(node)) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema(";")) {
+            parser.registrarErro();
+        }
+        return true;
     }
 
     public boolean atribuicaoLoop(Node pai) {
         Node node = pai.addNode("atribuicao_loop");
         node.addNode(new Node(parser.currentToken().lexema));
         if (!parser.matchTipo("id")) return false;
-        if (!parser.matchLexema("<<")) return false;
-        return expressao(node);
+        if (!parser.matchLexema("<<")) {
+            parser.registrarErro();
+            return false;
+        }
+        if (!expressao(node)) {
+            parser.registrarErro();
+            return false;
+        }
+        return true;
     }
 
     public boolean expressao(Node pai) {
@@ -112,7 +154,10 @@ public class Grammar {
                (parser.currentToken().lexema.equals("+") || parser.currentToken().lexema.equals("-"))) {
             node.addNode(new Node(parser.currentToken().lexema));
             parser.matchLexema(parser.currentToken().lexema);
-            if (!termo(node)) return false;
+            if (!termo(node)) {
+                parser.registrarErro();
+                return false;
+            }
         }
         return true;
     }
@@ -121,7 +166,10 @@ public class Grammar {
         Node node = pai.addNode("expressao_relacional");
         if (!expressao(node)) return false;
         if (opComparacao(node)) {
-            return expressao(node);
+            if (!expressao(node)) {
+                parser.registrarErro();
+                return false;
+            }
         }
         return true;
     }
@@ -130,7 +178,10 @@ public class Grammar {
         Node node = pai.addNode("condicao");
         if (!termoLogico(node)) return false;
         while (parser.matchLexema("||")) {
-            if (!termoLogico(node)) return false;
+            if (!termoLogico(node)) {
+                parser.registrarErro();
+                return false;
+            }
         }
         return true;
     }
@@ -149,7 +200,12 @@ public class Grammar {
             return fatorLogico(node);
         }
         if (parser.matchLexema("(")) {
-            return condicao(pai) && parser.matchLexema(")");
+            if (!condicao(pai)) return false;
+            if (!parser.matchLexema(")")) {
+                parser.registrarErro();
+                return false;
+            }
+            return true;
         }
         if (parser.currentToken() != null &&
             (parser.currentToken().lexema.equals("verdade") || parser.currentToken().lexema.equals("falso"))) {
@@ -167,7 +223,10 @@ public class Grammar {
                (parser.currentToken().lexema.equals("*") || parser.currentToken().lexema.equals("/"))) {
             node.addNode(new Node(parser.currentToken().lexema));
             parser.matchLexema(parser.currentToken().lexema);
-            if (!fator(node)) return false;
+            if (!fator(node)) {
+                parser.registrarErro();
+                return false;
+            }
         }
         return true;
     }
@@ -202,7 +261,12 @@ public class Grammar {
             return fator(node);
         }
         if (parser.matchLexema("(")) {
-            return expressao(pai) && parser.matchLexema(")");
+            if (!expressao(pai)) return false;
+            if (!parser.matchLexema(")")) {
+                parser.registrarErro();
+                return false;
+            }
+            return true;
         }
         if (parser.currentToken().lexema.equals("entrada")) {
             return entrada(pai);
@@ -213,12 +277,19 @@ public class Grammar {
     public boolean entrada(Node pai) {
         Node node = pai.addNode("entrada");
         if (!parser.matchLexema("entrada")) return false;
-        if (!parser.matchLexema("(")) return false;
+        if (!parser.matchLexema("(")) {
+            parser.registrarErro();
+            return false;
+        }
         if (parser.currentToken() != null && parser.currentToken().tipo.equals("texto")) {
             node.addNode(new Node(parser.currentToken().lexema));
             parser.matchTipo("texto");
         }
-        return parser.matchLexema(")");
+        if (!parser.matchLexema(")")) {
+            parser.registrarErro();
+            return false;
+        }
+        return true;
     }
 
     public boolean opComparacao(Node pai) {
@@ -236,12 +307,32 @@ public class Grammar {
     public boolean condicional(Node pai) {
         Node node = pai.addNode("condicional");
         if (!parser.matchLexema("se")) return false;
-        if (!parser.matchLexema("(")) return false;
-        if (!condicao(node)) return false;
-        if (!parser.matchLexema(")")) return false;
-        if (!parser.matchLexema("{")) return false;
-        if (!listaComandos(node)) return false;
-        if (!parser.matchLexema("}")) return false;
+        if (!parser.matchLexema("(")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!condicao(node)) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema(")")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema("{")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        listaComandos(node);
+        if (!parser.matchLexema("}")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
         blocoSenao(node);
         return true;
     }
@@ -249,9 +340,17 @@ public class Grammar {
     public boolean blocoSenao(Node pai) {
         if (parser.matchLexema("senao")) {
             Node node = pai.addNode("senao");
-            if (!parser.matchLexema("{")) return false;
-            if (!listaComandos(node)) return false;
-            return parser.matchLexema("}");
+            if (!parser.matchLexema("{")) {
+                parser.registrarErro();
+                parser.sincronizar();
+                return true;
+            }
+            listaComandos(node);
+            if (!parser.matchLexema("}")) {
+                parser.registrarErro();
+                parser.sincronizar();
+                return true;
+            }
         }
         return true;
     }
@@ -269,36 +368,109 @@ public class Grammar {
     public boolean enquanto(Node pai) {
         Node node = pai.addNode("enquanto");
         if (!parser.matchLexema("enquanto")) return false;
-        if (!parser.matchLexema("(")) return false;
-        if (!condicao(node)) return false;
-        if (!parser.matchLexema(")")) return false;
-        if (!parser.matchLexema("{")) return false;
-        if (!listaComandos(node)) return false;
-        return parser.matchLexema("}");
+        if (!parser.matchLexema("(")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!condicao(node)) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema(")")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema("{")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        listaComandos(node);
+        if (!parser.matchLexema("}")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        return true;
     }
 
     public boolean durante(Node pai) {
         Node node = pai.addNode("durante");
         if (!parser.matchLexema("durante")) return false;
-        if (!parser.matchLexema("(")) return false;
-        if (!atribuicaoLoop(node)) return false;
-        if (!parser.matchLexema(";")) return false;
-        if (!condicao(node)) return false;
-        if (!parser.matchLexema(";")) return false;
-        if (!atribuicaoLoop(node)) return false;
-        if (!parser.matchLexema(")")) return false;
-        if (!parser.matchLexema("{")) return false;
-        if (!listaComandos(node)) return false;
-        return parser.matchLexema("}");
+        if (!parser.matchLexema("(")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!atribuicaoLoop(node)) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema(";")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!condicao(node)) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema(";")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!atribuicaoLoop(node)) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema(")")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema("{")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        listaComandos(node);
+        if (!parser.matchLexema("}")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        return true;
     }
 
     public boolean saida(Node pai) {
         Node node = pai.addNode("saida");
         if (!parser.matchLexema("saida")) return false;
-        if (!parser.matchLexema("(")) return false;
-        if (!expressao(node)) return false;
-        if (!parser.matchLexema(")")) return false;
-        return parser.matchLexema(";");
+        if (!parser.matchLexema("(")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!expressao(node)) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema(")")) {
+            parser.registrarErro();
+            parser.sincronizar();
+            return true;
+        }
+        if (!parser.matchLexema(";")) {
+            parser.registrarErro();
+        }
+        return true;
     }
 
     public Tree getTree() {

@@ -48,6 +48,13 @@ public class Main {
             System.out.println();
         }
 
+        if (lexer.temErros()) {
+            System.out.println("========== ERROS LÉXICOS ==========");
+            for (String erro : lexer.getErros()) {
+                System.out.println("  " + erro);
+            }
+        }
+
         Parser parser = new Parser(tokens);
         Tree tree = parser.runParser();
 
