@@ -1,7 +1,7 @@
 # Projeto compiladores - Portugol Diferenciado
 
 Linguagem de programação própria, inspirada no Portugol, porém, com algumas diferenças implementadas.
-Compila/Traduz a linguagem para ??? (esperar escolha do professor)
+Compila/Traduz a linguagem para Kotlin ou Java
 
 ## Integrantes
 
@@ -13,6 +13,7 @@ Compila/Traduz a linguagem para ??? (esperar escolha do professor)
 
 ## Tokens / Palavras Reservadas
 
+```
 INICIO      → inicio->
 FIM         → <-fim
 INTEIRO     → inteiro
@@ -56,9 +57,11 @@ VEZES       → *
 DIVISAO     → /
 OP_ATRIBUICAO → <<
 OP_DECLARACAO → :
+```
 
 ## GLC
 
+```
 S → programa
 
 programa → INICIO lista_comandos FIM
@@ -154,13 +157,27 @@ entrada → ENTRADA ABRE_PARENTESE FECHA_PARENTESE
       | ENTRADA ABRE_PARENTESE LITERAL_TEXTO FECHA_PARENTESE
 
 saida → SAIDA ABRE_PARENTESE expressao FECHA_PARENTESE PONTO_VIRGULA
+```
 
-## Como Rodar -- EM ANDAMENTO --
+## Como Rodar
+
+- Requisitos:
+  - JDK instalado
+
+Rode o comando:
+
+``` bash
+java src/Main.java <caminho_do_arquivo_de_entrada> [--lang=kotlin|java] [--ast=tree|preorder|code] [--tokens]
+```
+
+Depois disso, no mesmo lugar onde está o arquivo de entrada, será gerado um arquivo com a extensão .kt ou .java, dependendo da linguagem escolhida.
+
+Então, basta compilar e rodar o arquivo gerado para ver o resultado.
 
 ## Exemplos de códigos
 
 - Declaração de variável
-
+```
 inicio->
 
 inteiro : contador << 0;
@@ -168,9 +185,11 @@ logico : isTrue << falso;
 texto : nome << "jose";
 
 <-fim
+```
 
 - Condicional (if else)
 
+```
 inicio->
 
 inteiro : idade;
@@ -183,9 +202,11 @@ se (idade >= 18) {
 }
 
 <-fim
+```
 
 - Laço de repetição
 
+```
 inicio->
 
 inteiro : i << 0;
@@ -196,6 +217,7 @@ enquanto (i < 5) {
 }
 
 <-fim
+```
 
 ## Traduções equivalentes
 
@@ -203,12 +225,15 @@ enquanto (i < 5) {
 
 - Declaração de variável
 
+```
 var contador: Int = 0
 var isTrue: Boolean = false
 var nome: String = "jose"
+```
 
 - Condicional (if else)
 
+```
 var idade: Int = 0
 idade = run {
     print("Digite sua idade");
@@ -219,51 +244,31 @@ if (idade >= 18) {
 } else {
     println("Menor de idade")
 }
+```
 
 - Laço de repetição
 
+```
 var i: Int = 0
 while (i < 5) {
     println(i)
     i = i + 1
 }
-
-### PYTHON
-
-- Declaração de variável
-
-contador: int = 0
-isTrue: bool = False
-nome: str = "jose"
-
-- Condicional (if else)
-
-idade: int = None
-idade = input("Digite sua idade")
-
-if idade >= 18:
-    print("Maior de idade")
-else:
-    print("Menor de idade")
-
-- Laço de repetição
-
-i: int = 0
-
-while i < 5:
-    print(i)
-    i = i + 1
+```
 
 ### JAVA
 
 - Declaração de variável
 
+```
 int contador = 0;
 boolean isTrue = false;
 String nome = "jose";
+```
 
 - Condicional (if else)
 
+```
 Scanner scanner = new Scanner(System.in); 
 
 int idade;
@@ -274,26 +279,64 @@ if (idade >= 18) {
 } else {
     System.out.println("Menor de idade");
 }
+```
 
 - Laço de repetição
 
+```
 int i = 0;
 
 while (i < 5) {
     System.out.println(i);
     i = i + 1;
 }
+```
+
+### PYTHON
+
+- Declaração de variável
+
+```
+contador: int = 0
+isTrue: bool = False
+nome: str = "jose"
+```
+
+- Condicional (if else)
+
+```
+idade: int = None
+idade = input("Digite sua idade")
+
+if idade >= 18:
+    print("Maior de idade")
+else:
+    print("Menor de idade")
+```
+
+- Laço de repetição
+
+```
+i: int = 0
+
+while i < 5:
+    print(i)
+    i = i + 1
+```
 
 ### C
 
 - Declaração de variável
 
+```
 int contador = 0;
 bool isTrue = false;
 char nome[] = "jose";
+```
 
 - Condicional (if else)
 
+```
 int idade;
 scanf("%d", &idade);
 
@@ -302,12 +345,15 @@ if (idade >= 18) {
 } else {
     printf("Menor de idade");
 }
+```
 
 - Laço de repetição
 
+```
 int i = 0;
 
 while (i < 5) {
     printf(i);
     i = i + 1;
 }
+```
