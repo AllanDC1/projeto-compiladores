@@ -1,0 +1,11 @@
+inicio->
+
+inteiro : i << 0;
+
+enquanto (i < 5) {
+    saida(i);
+    i << i + 1;
+}
+
+<-fim
+

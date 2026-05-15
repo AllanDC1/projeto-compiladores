@@ -1,0 +1,10 @@
+inicio->
+
+inteiro : i << 0;
+
+durante (i << 0; i < 10; i << i + 1) {
+    saida(i);
+}
+
+<-fim
+

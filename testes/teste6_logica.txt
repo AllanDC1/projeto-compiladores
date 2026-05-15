@@ -1,0 +1,28 @@
+  inicio->
+
+logico : a << verdade;
+logico : b << falso;
+
+se (a && !!b) {
+    saida("AND com negacao");
+}
+
+se (a || b) {
+    saida("OR verdadeiro");
+}
+
+inteiro : x << 5;
+se (x > 3 && x < 10) {
+    saida("x entre 3 e 10");
+}
+
+se (x == 5) {
+    saida("x igual a 5");
+}
+
+se (x <> 3) {
+    saida("x diferente de 3");
+}
+
+<-fim
+

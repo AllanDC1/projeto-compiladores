@@ -1,0 +1,14 @@
+inicio->
+
+inteiro : i << 0;
+enquanto (i < 3) {
+    inteiro : j << 0;
+    enquanto (j < 3) {
+        saida(i * 3 + j);
+        j << j + 1;
+    }
+    i << i + 1;
+}
+
+<-fim
+

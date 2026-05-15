@@ -1,0 +1,17 @@
+inicio->
+
+inteiro : idade << 20;
+
+se (idade >= 18) {
+    saida("Maior de idade");
+} senao {
+    saida("Menor de idade");
+}
+
+inteiro : nota << 7;
+se (nota >= 7) {
+    saida("Aprovado");
+}
+
+<-fim
+

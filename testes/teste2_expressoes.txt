@@ -1,0 +1,20 @@
+inicio->
+
+inteiro : a << 10;
+inteiro : b << 3;
+inteiro : soma << a + b;
+inteiro : sub << a - b;
+inteiro : mult << a * b;
+inteiro : div << a / b;
+inteiro : neg << -5;
+inteiro : complexo << a + b * 2 - 1;
+
+saida(soma);
+saida(sub);
+saida(mult);
+saida(div);
+saida(neg);
+saida(complexo);
+
+<-fim
+

@@ -1,0 +1,39 @@
+inicio->
+
+//-- Programa completo com todas as features --//
+
+inteiro : total << 0;
+inteiro : i << 0;
+texto : mensagem << "Resultado";
+decimal : media << 0.0;
+logico : encontrou << falso;
+
+durante (i << 1; i <= 5; i << i + 1) {
+    total << total + i;
+    se (i == 3) {
+        encontrou << verdade;
+    }
+}
+
+media << total / 5;
+
+se (encontrou) {
+    saida("Encontrou o 3!");
+} senao {
+    saida("Nao encontrou");
+}
+
+saida(mensagem);
+saida(total);
+saida(media);
+
+inteiro : j << 10;
+enquanto (j > 0) {
+    se (j == 5) {
+        saida("Metade!");
+    }
+    j << j - 1;
+}
+
+<-fim
+

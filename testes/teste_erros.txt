@@ -1,0 +1,13 @@
+inicio->
+inteiro: x << 10;
+inteiro y;
+decimal: pi << 3.14
+texto: nome << "Allan";
+x << 10 +;
+saida(x);
+saida(nome)
+se (x > 5 {
+    saida("maior");
+}
+<-fim
+
